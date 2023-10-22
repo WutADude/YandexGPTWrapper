@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "YandexGPTWrapper": {
+      "commandName": "Project"
+    },
+    "LibDebug": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\Arthur\\source\\repos\\YGPTWrapperTest\\bin\\Debug\\net7.0\\YGPTWrapperTest.exe"
+    }
+  }
+}
