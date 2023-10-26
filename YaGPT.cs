@@ -9,6 +9,7 @@ namespace YandexGPTWrapper
     public class YaGPT : WSocket, IDisposable
     {
         private readonly EventObjects _EventObjects;
+
         /// <summary>
         /// Конструктор класса для взаимодействия с языковой моделью.
         /// </summary>
@@ -37,9 +38,9 @@ namespace YandexGPTWrapper
                 while (!responseData.isEnd)
                 {
                     if (responseData.prefetchTime > 0)
-                        await Task.Delay(responseData.Item3, _CancelationToken ?? CancellationToken.None);
+                        await Task.Delay(responseData.prefetchTime, _CancelationToken ?? CancellationToken.None);
                     responseData = JsonManager.GetResponseData(await SendTextAsync(JsonManager.GetSerializedJson(_EventObjects.ContinuationEvent(ref firstContinuationRequestId))));
-                    answerString.Append(responseData.Item1);
+                    answerString.Append(responseData.messageText);
                 }
                 return answerString.ToString();
             }
