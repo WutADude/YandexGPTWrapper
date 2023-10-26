@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using YandexGPTWrapper.Helpers;
 using YandexGPTWrapper.JObjects;
 using YandexGPTWrapper.Networking;
@@ -12,11 +13,11 @@ namespace YandexGPTWrapper
         /// Конструктор класса для взаимодействия с языковой моделью.
         /// </summary>
         /// <param name="language">Необязательный параметр, который отвечает за то, на каком языке будет работать языковая модель. 
-        /// (ПОДДЕРЖИВАЕТСЯ ТОЛЬКО РУССКИЙ ЯЗЫК, Я НЕ ЗНАЮ ЗАЧЕМ ДОБАВИЛ АНГЛИЙСКИЙ, возможно на будущее?)</param>
+        /// (ПОДДЕРЖИВАЕТСЯ ТОЛЬКО РУССКИЙ ЯЗЫК, Я НЕ ЗНАЮ ЗАЧЕМ ДОБАВИЛ В БИБЛИОТЕКУ АНГЛИЙСКИЙ, возможно на будущее?)</param>
         /// <param name="cancelationToken">Токен для отмены операций.</param>
         public YaGPT(string language = Language.Russian, CancellationToken? cancelationToken = null) : base(cancelationToken)
         {
-            _EventObjects = new EventObjects(language);
+            _EventObjects = new EventObjects(language, Task.Run(async () => RegexManager.GetActualAppVersion(await Requests.GetHtmlDocument())).Result);
         }
 
         /// <summary>
@@ -27,18 +28,28 @@ namespace YandexGPTWrapper
         /// <returns>Возвращает строку с ответом с учётом форматирования самой языковой модели.</returns>
         public async Task<string> SendMessageAsync(string? message)
         {
-            StringBuilder finalString = new StringBuilder();
-            string response = await SendTextAsync(JsonManager.GetSerializedJson(_EventObjects.TextInputEvent(message)));
-            var tupleValues = JsonManager.GetResponseData(response);
-            finalString.Append(tupleValues.Item1);
-            string? firstContinuationRequestId = null;
-            while (!tupleValues.Item2)
+            StringBuilder answerString = new StringBuilder();
+            try
             {
-                tupleValues = JsonManager.GetResponseData(await SendTextAsync(JsonManager.GetSerializedJson(_EventObjects.ContinuationEvent(ref firstContinuationRequestId))));
-                finalString.Append(tupleValues.Item1);
+                var responseData = JsonManager.GetResponseData(await SendTextAsync(JsonManager.GetSerializedJson(_EventObjects.TextInputEvent(message))));
+                answerString.Append(responseData.messageText);
+                string? firstContinuationRequestId = null;
+                while (!responseData.isEnd)
+                {
+                    if (responseData.prefetchTime > 0)
+                        await Task.Delay(responseData.Item3, _CancelationToken ?? CancellationToken.None);
+                    responseData = JsonManager.GetResponseData(await SendTextAsync(JsonManager.GetSerializedJson(_EventObjects.ContinuationEvent(ref firstContinuationRequestId))));
+                    answerString.Append(responseData.Item1);
+                }
+                return answerString.ToString();
             }
-            return finalString.ToString();
+            catch (JsonException)
+            {
+                await ReconnectToSocket();
+                return await SendMessageAsync(message);
+            }
         }
+
 
         public void Dispose()
         {

@@ -5,10 +5,9 @@ namespace YandexGPTWrapper.Networking
 {
     public class WSocket : IDisposable
     {
-        private readonly ClientWebSocket _WebSocket = new ClientWebSocket();
-        private readonly CancellationToken? _CancelationToken;
+        protected ClientWebSocket _WebSocket = new ClientWebSocket();
+        public readonly CancellationToken? _CancelationToken;
         private readonly Uri _WSocketUri = new Uri("wss://uniproxy.alice.ya.ru/uni.ws");
-
         protected bool _Disposed = false;
 
         /// <summary>
@@ -52,6 +51,14 @@ namespace YandexGPTWrapper.Networking
                 return receivedMessage;
             }
             return string.Empty;
+        }
+
+        protected async Task ReconnectToSocket()
+        {
+            await _WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Close", _CancelationToken ?? CancellationToken.None);
+            _WebSocket.Dispose();
+            _WebSocket = new ClientWebSocket();
+            await ConnectToSocket();
         }
 
         // Делегаты для создания событий/ивентов.

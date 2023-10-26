@@ -9,7 +9,7 @@ namespace YandexGPTWrapper.JObjects
     internal sealed class EventObjects
     {
         private int _SeqNumber = 1;
-        private readonly string? _UUID, _WorkingLanguage;
+        private readonly string? _UUID, _WorkingLanguage, _ActualAppVersion;
         private const string _DialogSkillId = "b7c42cab-db61-46ba-871a-b10a6ecf3e0d";
         private string _LastRequestId;
 
@@ -17,10 +17,12 @@ namespace YandexGPTWrapper.JObjects
         /// Конструктор класса для создания Json объектов.
         /// </summary>
         /// <param name="workingLanguage">Необязательный параметр, определяющий язык работы языковой модели.</param>
-        internal EventObjects(string? workingLanguage)
+        /// <param name="actualAppVersion">Актуальная версия языковой модели, парсится при инициализации классов автоматически.</param>
+        internal EventObjects(string? workingLanguage, string? actualAppVersion)
         {
             _WorkingLanguage = workingLanguage;
             _UUID = Randomizer.GetRandomUUID;
+            _ActualAppVersion = actualAppVersion;
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace YandexGPTWrapper.JObjects
                         ["application"] = new JsonObject()
                         {
                             ["app_id"] = "ru.yandex.webdesktop",
-                            ["app_version"] = "1.0.279-home-static/alice-web/10.2",
+                            ["app_version"] = _ActualAppVersion,
                             ["platform"] = "windows",
                             ["os_version"] = "mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/116.0.0.0 safari/537.36 opr/102.0.0.0",
                             ["uuid"] = _UUID,
@@ -90,7 +92,7 @@ namespace YandexGPTWrapper.JObjects
                     }
                 }
             };
-            _SeqNumber++;
+            Interlocked.Increment(ref _SeqNumber);
             return textInput;
         }
 
@@ -168,7 +170,7 @@ namespace YandexGPTWrapper.JObjects
                 }
             };
             _LastRequestId = currRequestId;
-            _SeqNumber++;
+            Interlocked.Increment(ref _SeqNumber);
             return continuation;
         }
 
