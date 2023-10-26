@@ -44,6 +44,12 @@ namespace YandexGPTWrapper.Helpers
             return responseData;
         }
 
+        /// <summary>
+        /// Метод для получения прямого ответа из десериализованного Json объекта.
+        /// </summary>
+        /// <param name="directiveElement">Json объект директивы.</param>
+        /// <param name="payloadElement">Json объект пейлоада.</param>
+        /// <returns>Возвращает ответ от языковой модели в формате строки с учётом форматирования самой языковой моделью. (Будут сохранены все переносы, символы, ковычки и т.п.)</returns>
         private static string? GetResponseText(JsonElement directiveElement, JsonElement payloadElement)
         {
             if (directiveElement.TryGetProperty("text", out JsonElement textProperty))
@@ -56,7 +62,11 @@ namespace YandexGPTWrapper.Helpers
             return null;
         }
 
-
+        /// <summary>
+        /// Метод для получения булевого значения, означающего завершение ответа на заданный вопрос.
+        /// </summary>
+        /// <param name="directiveElement">Json объект директивы.</param>
+        /// <returns>Возвращает true | false в зависимости от того, закончен ли ответ или нет.</returns>
         private static bool GetIsEndBoolean(JsonElement directiveElement)
         {
             if (directiveElement.TryGetProperty("is_end", out JsonElement isEnd))
@@ -64,6 +74,11 @@ namespace YandexGPTWrapper.Helpers
             return true;
         }
 
+        /// <summary>
+        /// Метод для получения целочисленного значения, а точнее времени ожидания следующего запроса на продолжение в мс (милисекундах).
+        /// </summary>
+        /// <param name="directiveElement">Json объект директивы.</param>
+        /// <returns>Возвращает целочисленное (int) значение - означающее время ожидания.</returns>
         private static int GetPrefetchTime(JsonElement directiveElement)
         {
             if (directiveElement.TryGetProperty("prefetch_after_ms", out JsonElement prefetchTime))
@@ -71,6 +86,11 @@ namespace YandexGPTWrapper.Helpers
             return 0;
         }
 
+        /// <summary>
+        /// Метод для получения Json объекта директивы.
+        /// </summary>
+        /// <param name="payloadElement">Json объект пейлоада.</param>
+        /// <returns>Json объект директивы.</returns>
         private static JsonElement GetDirectivesElement(JsonElement payloadElement)
         {
             if (payloadElement.GetProperty("response").TryGetProperty("directives", out JsonElement directivesProperty))
@@ -79,9 +99,19 @@ namespace YandexGPTWrapper.Helpers
             return new JsonElement();
         }
 
+        /// <summary>
+        /// Метод для получения Json объекта из массива "messages" для дальнейшей работы.
+        /// </summary>
+        /// <param name="chatDialogProperty">Json объект "chatDialog".</param>
+        /// <returns>Возвращает первый элемент массива "messages".</returns>
         private static JsonElement GetCDMessageProperty(JsonElement chatDialogProperty) => chatDialogProperty.EnumerateArray().GetEnumerator()
             .FirstOrDefault().GetProperty("add_message_request").GetProperty("messages").EnumerateArray().GetEnumerator().FirstOrDefault();
 
+        /// <summary>
+        /// Метод для проверки на директиву "GoAway", которая возникает в некоторых случаях и отправляется самой языковой моделью, в случае представления - языковая модель перестаёт общение и нужно переподключаться к сокету.
+        /// </summary>
+        /// <param name="rootElement">Коренной Json объект.</param>
+        /// <returns>Возвращает true | false в зависимости от того, была ли представленна эта директива или нет.</returns>
         private static bool IsGoAwayDirectivePresented(JsonElement rootElement) => string.Compare(rootElement.GetProperty("directive").GetProperty("header").GetProperty("name").GetString(), "goaway", true) == 0;
     }
 }

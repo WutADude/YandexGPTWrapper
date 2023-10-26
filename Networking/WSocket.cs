@@ -7,7 +7,7 @@ namespace YandexGPTWrapper.Networking
     {
         protected ClientWebSocket _WebSocket = new ClientWebSocket();
         public readonly CancellationToken? _CancelationToken;
-        private readonly Uri _WSocketUri = new Uri("wss://uniproxy.alice.ya.ru/uni.ws");
+        private readonly Uri _WSUri = new Uri("wss://uniproxy.alice.ya.ru/uni.ws");
         protected bool _Disposed = false;
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace YandexGPTWrapper.Networking
         /// <summary>
         /// Подключение к сокету языковой модели.
         /// </summary>
-        private async Task ConnectToSocket() => await _WebSocket.ConnectAsync(_WSocketUri, _CancelationToken ?? CancellationToken.None);
+        private async Task ConnectToSocket() => await _WebSocket.ConnectAsync(_WSUri, _CancelationToken ?? CancellationToken.None);
 
         /// <summary>
         /// Отправка текстового сообщения в языковую модель.
@@ -46,13 +46,16 @@ namespace YandexGPTWrapper.Networking
             if (receivedData.MessageType == WebSocketMessageType.Text)
             {
                 string receivedMessage = Encoding.UTF8.GetString(incomingData, 0, receivedData.Count);
-                if (OnMessageRecieved is not null)
-                    OnMessageRecieved(receivedMessage);
+                if (OnMessageReceived is not null)
+                    OnMessageReceived(receivedMessage);
                 return receivedMessage;
             }
             return string.Empty;
         }
 
+        /// <summary>
+        /// Задача переподключения к веб-сокету в случае "GoAway" - директивы.
+        /// </summary>
         protected async Task ReconnectToSocket()
         {
             await _WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Close", _CancelationToken ?? CancellationToken.None);
@@ -63,7 +66,7 @@ namespace YandexGPTWrapper.Networking
 
         // Делегаты для создания событий/ивентов.
         public delegate void WSocketCloseHandler(string? closeDescription);
-        public delegate void WSocketOnMessageRecieved(string? messageText);
+        public delegate void WSocketOnMessageReceived(string? messageText);
 
         /// <summary>
         /// Событие/ивент, возникающее при возврате сообщения о закрытии соединения.
@@ -74,7 +77,7 @@ namespace YandexGPTWrapper.Networking
         /// <summary>
         /// Событие/ивент, возникающее при получении какого-либо ответа от языковой модели.
         /// </summary>
-        public event WSocketOnMessageRecieved? OnMessageRecieved;
+        public event WSocketOnMessageReceived? OnMessageReceived;
 
         protected virtual async void Dispose(bool disposing)
         {
