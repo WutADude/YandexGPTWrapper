@@ -44,7 +44,7 @@ namespace YandexGPTWrapper
                 }
                 return answerString.ToString();
             }
-            catch (JsonException)
+            catch (JsonException) // Ловим исключение, которое возникает при возврате "GoAway" директивы.
             {
                 await ReconnectToSocket();
                 return await SendMessageAsync(message);
@@ -52,7 +52,7 @@ namespace YandexGPTWrapper
         }
 
 
-        public void Dispose()
+        public new void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

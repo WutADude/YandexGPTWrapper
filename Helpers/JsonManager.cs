@@ -7,7 +7,6 @@ namespace YandexGPTWrapper.Helpers
     /// </summary>
     internal static class JsonManager
     {
-
         /// <summary>
         /// Метод, который вощвращает сериализованный объект в Json, в формате строки.
         /// </summary>

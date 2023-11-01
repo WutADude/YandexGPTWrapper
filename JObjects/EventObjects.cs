@@ -11,7 +11,7 @@ namespace YandexGPTWrapper.JObjects
         private int _SeqNumber = 1;
         private readonly string? _UUID, _WorkingLanguage, _ActualAppVersion;
         private const string _DialogSkillId = "b7c42cab-db61-46ba-871a-b10a6ecf3e0d";
-        private string _LastRequestId;
+        private string? _LastRequestId;
 
         /// <summary>
         /// Конструктор класса для создания Json объектов.
@@ -177,7 +177,7 @@ namespace YandexGPTWrapper.JObjects
         /// <summary>
         /// Возвращает ID последнего запроса оправленного пользователем.
         /// </summary>
-        internal string GetLastRequestId => _LastRequestId;
+        internal string? GetLastRequestId => _LastRequestId;
 
         /// <summary>
         /// Возвращает текущий ID самого пользователя. (По факту - бесполезен и генерируется рандомно)

@@ -39,15 +39,13 @@ namespace YandexGPTWrapper.Networking
             WebSocketReceiveResult receivedData = await _WebSocket.ReceiveAsync(new ArraySegment<byte>(incomingData), _CancelationToken ?? CancellationToken.None);
             if (receivedData.CloseStatus.HasValue)
             {
-                if (OnWSocketClose is not null)
-                    OnWSocketClose(receivedData.CloseStatusDescription);
+                OnWSocketClose?.Invoke(receivedData.CloseStatusDescription);
                 return string.Empty;
             }
             if (receivedData.MessageType == WebSocketMessageType.Text)
             {
                 string receivedMessage = Encoding.UTF8.GetString(incomingData, 0, receivedData.Count);
-                if (OnMessageReceived is not null)
-                    OnMessageReceived(receivedMessage);
+                OnMessageReceived?.Invoke(receivedMessage);
                 return receivedMessage;
             }
             return string.Empty;
@@ -92,7 +90,7 @@ namespace YandexGPTWrapper.Networking
             _Disposed = true;
         }
 
-        public async void Dispose()
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
