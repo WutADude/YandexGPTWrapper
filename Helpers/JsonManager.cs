@@ -37,7 +37,7 @@ namespace YandexGPTWrapper.Helpers
             JsonElement payloadElement = rootElement.GetProperty("directive").GetProperty("payload");
             JsonElement directiveElement = GetDirectiveElement(payloadElement);
             var responseData = (messageText: GetResponseText(directiveElement, payloadElement),
-                isEnd: GetIsEndBoolean(directiveElement),
+                isEnd: GetIsEnd(directiveElement),
                 prefetchTime: GetPrefetchTime(directiveElement)
                 );
             return responseData;
@@ -51,10 +51,10 @@ namespace YandexGPTWrapper.Helpers
         /// <returns>Возвращает ответ от языковой модели в формате строки с учётом форматирования самой языковой моделью. (Будут сохранены все переносы, символы, ковычки и т.п.)</returns>
         private static string? GetResponseText(JsonElement directiveElement, JsonElement payloadElement)
         {
-            if (directiveElement.ValueKind == JsonValueKind.Object && directiveElement.TryGetProperty("text", out JsonElement textProperty))
-                return textProperty.GetString();
-            if (payloadElement.TryGetProperty("response", out JsonElement responseProperty))
-                return responseProperty.GetProperty("card").GetProperty("text").GetString();
+            if (directiveElement.ValueKind == JsonValueKind.Object && directiveElement.TryGetProperty("text", out JsonElement responseTextProperty))
+                return responseTextProperty.GetString();
+            if (payloadElement.TryGetProperty("response", out JsonElement responseCardProperty))
+                return responseCardProperty.GetProperty("card").GetProperty("text").GetString();
             if (payloadElement.GetProperty("response").TryGetProperty("chat_dialog_update", out JsonElement chatDialogProperty))
                 if (chatDialogProperty.GetArrayLength() > 0)
                     return GetCDMessageProperty(payloadElement).GetProperty("content").GetProperty("plain_response_text").GetString();
@@ -66,7 +66,7 @@ namespace YandexGPTWrapper.Helpers
         /// </summary>
         /// <param name="directiveElement">Json объект директивы.</param>
         /// <returns>Возвращает true | false в зависимости от того, закончен ли ответ или нет.</returns>
-        private static bool GetIsEndBoolean(JsonElement directiveElement)
+        private static bool GetIsEnd(JsonElement directiveElement)
         {
             if (directiveElement.ValueKind == JsonValueKind.Object && directiveElement.TryGetProperty("is_end", out JsonElement isEnd))
                 return isEnd.GetBoolean();

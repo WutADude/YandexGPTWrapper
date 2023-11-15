@@ -3,7 +3,7 @@ using System.Net.WebSockets;
 
 namespace YandexGPTWrapper.Networking
 {
-    public class WSocket : IDisposable
+    public abstract class WSocket : IDisposable
     {
         protected ClientWebSocket _WebSocket = new ClientWebSocket();
         public readonly CancellationToken? _CancelationToken;

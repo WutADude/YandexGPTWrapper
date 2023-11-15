@@ -27,7 +27,7 @@ namespace YandexGPTWrapper
         /// </summary>
         /// <param name="message">Текст/вопрос для отправки.</param>
         /// <returns>Возвращает строку с ответом с учётом форматирования самой языковой модели.</returns>
-        public async Task<string> SendMessageAsync(string? message)
+        public async Task<string> SendMessageAsync(string message)
         {
             StringBuilder answerString = new StringBuilder();
             try
@@ -51,6 +51,7 @@ namespace YandexGPTWrapper
             }
         }
 
+        public string GetCurrentVersion => _EventObjects.GetCurrentYaGPTVersion;
 
         public new void Dispose()
         {

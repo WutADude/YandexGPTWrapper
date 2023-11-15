@@ -8,7 +8,7 @@
         /// <returns>HTML документ для дальнешей работы.</returns>
         internal static async Task<string> GetHtmlDocument()
         {
-            using (HttpClient client = new HttpClient(new HttpClientHandler() {UseCookies = false }) { Timeout = TimeSpan.FromSeconds(5) })
+            using (HttpClient client = new HttpClient(new HttpClientHandler() { UseCookies = false }) { Timeout = TimeSpan.FromSeconds(5) })
             {
                 var response = await client.GetAsync("https://ya.ru/alisa_davay_pridumaem?utm_source=landing");
                 if (response.IsSuccessStatusCode)

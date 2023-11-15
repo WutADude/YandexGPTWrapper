@@ -9,7 +9,8 @@ namespace YandexGPTWrapper.JObjects
     internal sealed class EventObjects
     {
         private int _SeqNumber = 1;
-        private readonly string? _UUID, _WorkingLanguage, _ActualAppVersion;
+        private readonly string _UUID, _WorkingLanguage;
+        private readonly string _ActualAppVersion = "1.0.281-home-static/alice-web/15";
         private const string _DialogSkillId = "b7c42cab-db61-46ba-871a-b10a6ecf3e0d";
         private string? _LastRequestId;
 
@@ -17,12 +18,12 @@ namespace YandexGPTWrapper.JObjects
         /// Конструктор класса для создания Json объектов.
         /// </summary>
         /// <param name="workingLanguage">Необязательный параметр, определяющий язык работы языковой модели.</param>
-        /// <param name="actualAppVersion">Актуальная версия языковой модели, парсится при инициализации классов автоматически.</param>
-        internal EventObjects(string? workingLanguage, string? actualAppVersion)
+        /// <param name="appVersion">Актуальная версия языковой модели, парсится при инициализации классов автоматически.</param>
+        internal EventObjects(string workingLanguage, string? appVersion)
         {
             _WorkingLanguage = workingLanguage;
             _UUID = Randomizer.GetRandomUUID;
-            _ActualAppVersion = actualAppVersion;
+            _ActualAppVersion = string.IsNullOrWhiteSpace(appVersion) ? _ActualAppVersion : appVersion;
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace YandexGPTWrapper.JObjects
                             ["uuid"] = _UUID,
                             ["lang"] = _WorkingLanguage,
                             ["client_time"] = DateTime.Now.ToString("s").Replace("-", "").Replace(":", ""),
-                            ["timezone"] = "Europe/Moskow",
+                            ["timezone"] = "Europe/Moscow",
                             ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
                         },
                         ["header"] = new JsonObject()
@@ -126,7 +127,7 @@ namespace YandexGPTWrapper.JObjects
                             ["uuid"] = _UUID,
                             ["lang"] = _WorkingLanguage,
                             ["client_time"] = DateTime.Now.ToString("s").Replace("-", "").Replace(":", ""),
-                            ["timezone"] = "Europe/Moskow",
+                            ["timezone"] = "Europe/Moscow",
                             ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
                         },
                         ["format"] = "audio/ogg;codecs=opus",
@@ -182,11 +183,16 @@ namespace YandexGPTWrapper.JObjects
         /// <summary>
         /// Возвращает текущий ID самого пользователя. (По факту - бесполезен и генерируется рандомно)
         /// </summary>
-        internal string? GetUUID => _UUID;
+        internal string GetUUID => _UUID;
 
         /// <summary>
         /// Возвращает текущий номер очерёдности, или же число отправленных пользователем запросов.
         /// </summary>
         internal int GetCurrentSequenseNumber => _SeqNumber;
+
+        /// <summary>
+        /// Возвращает текущую используемую версию языковой модели.
+        /// </summary>
+        internal string GetCurrentYaGPTVersion => _ActualAppVersion;
     }
 }
