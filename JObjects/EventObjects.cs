@@ -9,7 +9,8 @@ namespace YandexGPTWrapper.JObjects
     internal sealed class EventObjects
     {
         private int _SeqNumber = 1;
-        private readonly string? _UUID, _WorkingLanguage, _ActualAppVersion;
+        private readonly string? _UUID, _WorkingLanguage;
+        private readonly string _ActualAppVersion = "1.0.281-home-static/alice-web/15";
         private const string _DialogSkillId = "b7c42cab-db61-46ba-871a-b10a6ecf3e0d";
         private string? _LastRequestId;
 
@@ -17,12 +18,12 @@ namespace YandexGPTWrapper.JObjects
         /// Конструктор класса для создания Json объектов.
         /// </summary>
         /// <param name="workingLanguage">Необязательный параметр, определяющий язык работы языковой модели.</param>
-        /// <param name="actualAppVersion">Актуальная версия языковой модели, парсится при инициализации классов автоматически.</param>
-        internal EventObjects(string? workingLanguage, string? actualAppVersion)
+        /// <param name="appVersion">Актуальная версия языковой модели, парсится при инициализации классов автоматически.</param>
+        internal EventObjects(string? workingLanguage, string? appVersion)
         {
             _WorkingLanguage = workingLanguage;
             _UUID = Randomizer.GetRandomUUID;
-            _ActualAppVersion = actualAppVersion;
+            _ActualAppVersion = string.IsNullOrWhiteSpace(appVersion) ? _ActualAppVersion : appVersion;
         }
 
         /// <summary>
@@ -188,5 +189,10 @@ namespace YandexGPTWrapper.JObjects
         /// Возвращает текущий номер очерёдности, или же число отправленных пользователем запросов.
         /// </summary>
         internal int GetCurrentSequenseNumber => _SeqNumber;
+
+        /// <summary>
+        /// Возвращает текущую используемую версию языковой модели.
+        /// </summary>
+        internal string? GetCurrentYaGPTVersion => _ActualAppVersion;
     }
 }

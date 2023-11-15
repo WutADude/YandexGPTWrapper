@@ -51,6 +51,7 @@ namespace YandexGPTWrapper
             }
         }
 
+        public string? GetCurrentVersion => _EventObjects.GetCurrentYaGPTVersion;
 
         public new void Dispose()
         {
