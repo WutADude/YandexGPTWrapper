@@ -51,6 +51,9 @@ namespace YandexGPTWrapper
             }
         }
 
+        /// <summary>
+        /// Возвращает текущую используемую версию языковой модели.
+        /// </summary>
         public string GetCurrentVersion => _EventObjects.GetCurrentYaGPTVersion;
 
         public new void Dispose()
