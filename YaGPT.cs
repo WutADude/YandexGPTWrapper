@@ -19,6 +19,7 @@ namespace YandexGPTWrapper
         public YaGPT(string language = Language.Russian, CancellationToken? cancelationToken = null) : base(cancelationToken)
         {
             _EventObjects = new EventObjects(language, Task.Run(async () => RegexManager.GetActualAppVersion(await Requests.GetHtmlDocument())).Result);
+            Task.Run(async () => await SendEventAsync(JsonManager.GetSerializedJson(_EventObjects.AuthEvent), waitResponse: false)).Wait();
         }
 
         /// <summary>
@@ -32,14 +33,14 @@ namespace YandexGPTWrapper
             StringBuilder answerString = new StringBuilder();
             try
             {
-                var responseData = JsonManager.GetResponseData(await SendTextAsync(JsonManager.GetSerializedJson(_EventObjects.TextInputEvent(message))));
+                var responseData = JsonManager.GetResponseData(await SendEventAsync(JsonManager.GetSerializedJson(_EventObjects.TextInputEvent(message))));
                 answerString.Append(responseData.messageText);
                 string? firstContinuationRequestId = null;
                 while (!responseData.isEnd)
                 {
                     if (responseData.prefetchTime > 0)
                         await Task.Delay(responseData.prefetchTime, _CancelationToken ?? CancellationToken.None);
-                    responseData = JsonManager.GetResponseData(await SendTextAsync(JsonManager.GetSerializedJson(_EventObjects.ContinuationEvent(ref firstContinuationRequestId))));
+                    responseData = JsonManager.GetResponseData(await SendEventAsync(JsonManager.GetSerializedJson(_EventObjects.ContinuationEvent(ref firstContinuationRequestId))));
                     answerString.Append(responseData.messageText);
                 }
                 return answerString.ToString();

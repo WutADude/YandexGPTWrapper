@@ -30,11 +30,14 @@ namespace YandexGPTWrapper.Networking
         /// </summary>
         /// <param name="message">Текст сообщения сериализованный в Json объект.</param>
         /// <param name="endMessage">Необязательный параметр отвечающий за то, является ли сообщение - окончанием, по стандарту = true.</param>
+        /// <param name="waitResponse">Необязательный параметр отвечающий за то, нужно-ли нам ожидать ответа от языковой модели или нет, по стандарту = true.</param>
         /// <returns>Возвращает сериализованный ответ языковой модели в формате строки для последующей десериализации.</returns>
-        protected async Task<string> SendTextAsync(string message, bool endMessage = true)
+        protected async Task<string> SendEventAsync(string message, bool endMessage = true, bool waitResponse = true)
         {
             byte[] messageBytes = Encoding.UTF8.GetBytes(message);
             await _WebSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, endMessage, _CancelationToken ?? CancellationToken.None);
+            if (!waitResponse)
+                return string.Empty;
             byte[] incomingData = new byte[65536]; // Размер ответа всегда разный, выделенный буфер - это буфер с запасом.
             WebSocketReceiveResult receivedData = await _WebSocket.ReceiveAsync(new ArraySegment<byte>(incomingData), _CancelationToken ?? CancellationToken.None);
             if (receivedData.CloseStatus.HasValue)

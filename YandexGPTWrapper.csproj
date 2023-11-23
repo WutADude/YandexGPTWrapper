@@ -4,9 +4,20 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Company>WutADude</Company>
-    <Authors>$(AssemblyName)</Authors>
+    <Company>wDude</Company>
+    <Authors>WutADude</Authors>
     <Description>Библиотека для работы с языковой моделью YandexGPT</Description>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Version>1.0.17</Version>
+    <Copyright>WutADude</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
