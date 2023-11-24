@@ -100,7 +100,7 @@ namespace YandexGPTWrapper.JObjects
                         },
                         ["header"] = new JsonObject()
                         {
-                            ["prev_req_id"] = null,
+                            ["prev_req_id"] = Randomizer.GetRandomId,
                             ["sequence_number"] = null,
                             ["request_id"] = _LastRequestId = Randomizer.GetRandomId,
                             ["dialog_id"] = _DialogSkillId,
