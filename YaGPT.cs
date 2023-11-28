@@ -18,8 +18,8 @@ namespace YandexGPTWrapper
         /// <param name="cancelationToken">Токен для отмены операций.</param>
         public YaGPT(string language = Language.Russian, CancellationToken? cancelationToken = null) : base(cancelationToken)
         {
-            _EventObjects = new EventObjects(language, Task.Run(async () => RegexManager.GetActualAppVersion(await Requests.GetHtmlDocument())).Result);
-            Task.Run(async () => await SendEventAsync(JsonManager.GetSerializedJson(_EventObjects.AuthEvent), waitResponse: false)).Wait();
+            _EventObjects = new EventObjects(language, RegexManager.GetActualAppVersion(Requests.GetHtmlDocument().Result));
+            SendEventAsync(JsonManager.GetSerializedJson(_EventObjects.AuthEvent), waitResponse: false).Wait();
         }
 
         /// <summary>
